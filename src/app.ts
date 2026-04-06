@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import authRouter from './routes/auth.routes.js';
+import meRouter from './routes/me.route.js';
 
 const app = express();
 
@@ -9,5 +11,8 @@ app.use(express.json());
 app.get('/api/health', (_req, res) => {
   res.status(200).json({ ok: true, message: 'Server is running' });
 });
+
+app.use('/api/auth', authRouter);
+app.use('/api', meRouter);
 
 export default app;
