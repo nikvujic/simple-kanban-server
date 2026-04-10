@@ -3,6 +3,7 @@ import cors from 'cors';
 import authRouter from './routes/auth.routes.js';
 import meRouter from './routes/me.route.js';
 import boardsRouter from './routes/boards.routes.js';
+import listsRouter from './routes/lists.routes.js';
 
 const app = express();
 
@@ -16,5 +17,6 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/auth', authRouter);
 app.use('/api', meRouter);
 app.use('/api', boardsRouter);
+app.use('/api', listsRouter);
 
 export default app;

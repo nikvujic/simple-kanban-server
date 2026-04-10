@@ -28,7 +28,20 @@ model Board {
   createdAt   DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lists List[]
 
   @@index([userId])
   @@map("boards")
+}
+
+model List {
+  id       String @id @default(uuid())
+  boardId  String
+  name     String @db.VarChar(50)
+  position Int
+
+  board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+
+  @@index([boardId])
+  @@map("lists")
 }
