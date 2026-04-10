@@ -7,3 +7,6 @@ export const createListSchema = z.object({
 export const updateListSchema = z.object({
   name: z.string().trim().min(1).max(50),
 });
+
+export type CreateListInput = z.infer<typeof createListSchema>;
+export type UpdateListInput = z.infer<typeof updateListSchema>;

@@ -11,3 +11,6 @@ export const updateBoardSchema = z.object({
   description: z.string().trim().max(120).optional(),
   color: z.string().trim().min(1).max(20).optional(),
 });
+
+export type CreateBoardInput = z.infer<typeof createBoardSchema>;
+export type UpdateBoardInput = z.infer<typeof updateBoardSchema>;
