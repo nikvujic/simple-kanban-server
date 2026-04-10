@@ -13,6 +13,22 @@ model User {
   name         String
   passwordHash String
   createdAt    DateTime @default(now())
+  boards       Board[]
 
   @@map("users")
+}
+
+model Board {
+  id          String   @id @default(uuid())
+  userId      String
+  name        String   @db.VarChar(50)
+  description String?  @db.VarChar(120)
+  color       String   @db.VarChar(20)
+  position    Int
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("boards")
 }
