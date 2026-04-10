@@ -8,6 +8,28 @@ export async function getBoards(userId: string) {
   });
 }
 
+export async function getBoardById(userId: string, boardId: string) {
+  const board = await prisma.board.findFirst({
+    where: { id: boardId, userId },
+    include: {
+      lists: {
+        orderBy: { position: 'asc' },
+        include: {
+          cards: {
+            orderBy: { position: 'asc' },
+          },
+        },
+      },
+    },
+  });
+
+  if (!board) {
+    throw new Error('BOARD_NOT_FOUND');
+  }
+
+  return board;
+}
+
 export async function createBoard(userId: string, input: CreateBoardInput) {
   const lastBoard = await prisma.board.findFirst({
     where: { userId },

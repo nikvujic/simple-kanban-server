@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { requireAuth } from '../middlewares/auth.middleware.js';
 import {
   getBoardsController,
+  getBoardByIdController,
   createBoardController,
   updateBoardController,
   deleteBoardController,
@@ -10,6 +11,7 @@ import {
 const boardsRouter = Router();
 
 boardsRouter.get('/boards', requireAuth, getBoardsController);
+boardsRouter.get('/boards/:id', requireAuth, getBoardByIdController);
 boardsRouter.post('/boards', requireAuth, createBoardController);
 boardsRouter.patch('/boards/:id', requireAuth, updateBoardController);
 boardsRouter.delete('/boards/:id', requireAuth, deleteBoardController);
