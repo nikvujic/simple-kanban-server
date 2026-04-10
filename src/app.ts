@@ -4,6 +4,7 @@ import authRouter from './routes/auth.routes.js';
 import meRouter from './routes/me.route.js';
 import boardsRouter from './routes/boards.routes.js';
 import listsRouter from './routes/lists.routes.js';
+import cardsRouter from './routes/cards.routes.js';
 
 const app = express();
 
@@ -18,5 +19,6 @@ app.use('/api/auth', authRouter);
 app.use('/api', meRouter);
 app.use('/api', boardsRouter);
 app.use('/api', listsRouter);
+app.use('/api', cardsRouter);
 
 export default app;
