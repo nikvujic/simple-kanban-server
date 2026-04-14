@@ -1,5 +1,10 @@
 import { prisma } from '../../lib/prisma.js';
-import type { CreateBoardInput, ImportDataInput, UpdateBoardInput } from './board.schemas.js';
+import type {
+  CreateBoardInput,
+  ImportDataInput,
+  ReorderBoardsInput,
+  UpdateBoardInput,
+} from './board.schemas.js';
 
 export async function getBoards(userId: string) {
   return prisma.board.findMany({
@@ -102,6 +107,30 @@ export async function importUserData(userId: string, data: ImportDataInput) {
     },
     { timeout: 30_000 },
   );
+}
+
+export async function reorderBoards(userId: string, input: ReorderBoardsInput) {
+  await prisma.$transaction(async (tx) => {
+    const owned = await tx.board.findMany({
+      where: { userId },
+      select: { id: true },
+    });
+    const ownedIds = new Set(owned.map((b) => b.id));
+
+    if (input.boardIds.length !== ownedIds.size) {
+      throw new Error('REORDER_MISMATCH');
+    }
+    for (const id of input.boardIds) {
+      if (!ownedIds.has(id)) throw new Error('REORDER_MISMATCH');
+    }
+
+    for (let i = 0; i < input.boardIds.length; i++) {
+      await tx.board.update({
+        where: { id: input.boardIds[i]! },
+        data: { position: i },
+      });
+    }
+  });
 }
 
 export async function deleteBoard(userId: string, boardId: string) {

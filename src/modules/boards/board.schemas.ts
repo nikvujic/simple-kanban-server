@@ -37,3 +37,9 @@ export const importDataSchema = z.object({
 });
 
 export type ImportDataInput = z.infer<typeof importDataSchema>;
+
+export const reorderBoardsSchema = z.object({
+  boardIds: z.array(z.string().min(1)).max(500),
+});
+
+export type ReorderBoardsInput = z.infer<typeof reorderBoardsSchema>;

@@ -1,6 +1,11 @@
 import type { Request, Response } from 'express';
 import { ZodError } from 'zod';
-import { createBoardSchema, importDataSchema, updateBoardSchema } from './board.schemas.js';
+import {
+  createBoardSchema,
+  importDataSchema,
+  reorderBoardsSchema,
+  updateBoardSchema,
+} from './board.schemas.js';
 import {
   getBoards,
   getBoardById,
@@ -8,6 +13,7 @@ import {
   updateBoard,
   deleteBoard,
   importUserData,
+  reorderBoards,
 } from './board.service.js';
 
 export async function getBoardsController(req: Request, res: Response) {
@@ -138,6 +144,32 @@ export async function importDataController(req: Request, res: Response) {
         code: 'INTERNAL',
         message: 'Something went wrong',
       },
+    });
+  }
+}
+
+export async function reorderBoardsController(req: Request, res: Response) {
+  try {
+    const userId = req.user!.sub;
+    const parsed = reorderBoardsSchema.parse(req.body);
+    await reorderBoards(userId, parsed);
+
+    return res.status(204).send();
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return res.status(400).json({
+        error: { code: 'VALIDATION', message: 'Invalid request data', details: error.issues },
+      });
+    }
+    if (error instanceof Error && error.message === 'REORDER_MISMATCH') {
+      return res.status(400).json({
+        error: { code: 'VALIDATION', message: 'boardIds must include every board the user owns exactly once' },
+      });
+    }
+
+    console.error(error);
+    return res.status(500).json({
+      error: { code: 'INTERNAL', message: 'Something went wrong' },
     });
   }
 }
