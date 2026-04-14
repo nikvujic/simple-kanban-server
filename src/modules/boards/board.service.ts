@@ -5,6 +5,9 @@ export async function getBoards(userId: string) {
   return prisma.board.findMany({
     where: { userId },
     orderBy: { position: 'asc' },
+    include: {
+      _count: { select: { lists: true } },
+    },
   });
 }
 
