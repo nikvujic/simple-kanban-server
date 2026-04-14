@@ -1,7 +1,14 @@
 import type { Request, Response } from 'express';
 import { ZodError } from 'zod';
-import { createBoardSchema, updateBoardSchema } from './board.schemas.js';
-import { getBoards, getBoardById, createBoard, updateBoard, deleteBoard } from './board.service.js';
+import { createBoardSchema, importDataSchema, updateBoardSchema } from './board.schemas.js';
+import {
+  getBoards,
+  getBoardById,
+  createBoard,
+  updateBoard,
+  deleteBoard,
+  importUserData,
+} from './board.service.js';
 
 export async function getBoardsController(req: Request, res: Response) {
   const userId = req.user!.sub;
@@ -91,6 +98,35 @@ export async function updateBoardController(req: Request, res: Response) {
         error: {
           code: 'NOT_FOUND',
           message: 'Board not found',
+        },
+      });
+    }
+
+    console.error(error);
+
+    return res.status(500).json({
+      error: {
+        code: 'INTERNAL',
+        message: 'Something went wrong',
+      },
+    });
+  }
+}
+
+export async function importDataController(req: Request, res: Response) {
+  try {
+    const userId = req.user!.sub;
+    const parsed = importDataSchema.parse(req.body);
+    await importUserData(userId, parsed);
+
+    return res.status(204).send();
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return res.status(400).json({
+        error: {
+          code: 'VALIDATION',
+          message: 'Invalid import data',
+          details: error.issues,
         },
       });
     }

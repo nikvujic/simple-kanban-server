@@ -6,11 +6,13 @@ import {
   createBoardController,
   updateBoardController,
   deleteBoardController,
+  importDataController,
 } from '../modules/boards/board.controller.js';
 
 const boardsRouter = Router();
 
 boardsRouter.get('/boards', requireAuth, getBoardsController);
+boardsRouter.post('/boards/import', requireAuth, importDataController);
 boardsRouter.get('/boards/:id', requireAuth, getBoardByIdController);
 boardsRouter.post('/boards', requireAuth, createBoardController);
 boardsRouter.patch('/boards/:id', requireAuth, updateBoardController);

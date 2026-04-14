@@ -1,5 +1,5 @@
 import { prisma } from '../../lib/prisma.js';
-import type { CreateBoardInput, UpdateBoardInput } from './board.schemas.js';
+import type { CreateBoardInput, ImportDataInput, UpdateBoardInput } from './board.schemas.js';
 
 export async function getBoards(userId: string) {
   return prisma.board.findMany({
@@ -64,6 +64,41 @@ export async function updateBoard(userId: string, boardId: string, input: Update
       ...(input.color !== undefined ? { color: input.color } : {}),
     },
   });
+}
+
+export async function importUserData(userId: string, data: ImportDataInput) {
+  await prisma.$transaction(
+    async (tx) => {
+      await tx.board.deleteMany({ where: { userId } });
+
+      for (let i = 0; i < data.boards.length; i++) {
+        const board = data.boards[i]!;
+        await tx.board.create({
+          data: {
+            userId,
+            name: board.name,
+            description: board.description || null,
+            color: board.color,
+            position: i,
+            lists: {
+              create: board.lists.map((list, j) => ({
+                name: list.name,
+                position: j,
+                cards: {
+                  create: list.cards.map((card, k) => ({
+                    title: card.title,
+                    description: card.description || null,
+                    position: k,
+                  })),
+                },
+              })),
+            },
+          },
+        });
+      }
+    },
+    { timeout: 30_000 },
+  );
 }
 
 export async function deleteBoard(userId: string, boardId: string) {
