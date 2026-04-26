@@ -4,34 +4,47 @@ A kanban board REST API built with Express, TypeScript, Prisma, and PostgreSQL.
 
 ## Prerequisites
 
-- Node.js
 - Docker
+- Node.js (only needed for the local dev workflow)
 
-## Setup
+## Quick start (Docker)
 
-### 1. Start the database
+Runs the API and Postgres together. Migrations run automatically on startup.
 
 ```bash
-docker compose up -d
+cp .env.example .env   # then edit values as needed
+docker compose up -d --build
 ```
 
-### 2. Install dependencies
+API is available at `http://localhost:17600`.
+
+To seed the database (one-off):
 
 ```bash
+docker compose exec app npx prisma db seed
+```
+
+## Local dev workflow
+
+Runs Postgres in Docker and the server on the host with hot reload.
+
+```bash
+docker compose up -d postgres
 npm install
-```
-
-### 3. Configure environment
-
-Copy `.env.example` to `.env` and fill in your values:
-
-```bash
 cp .env.example .env
+npx prisma migrate dev
+npx prisma db seed
+npm run dev
 ```
+
+API is available at `http://localhost:4000` (or whatever `PORT` is set to in `.env`).
+
+## Environment
 
 ```env
 DATABASE_URL="postgresql://kanban_user:kanban_password@localhost:5433/simple-kanban?schema=public"
 PORT=4000
+JWT_SECRET="change-me"
 
 # Seed config
 SEED_USER_EMAIL=your@email.com
@@ -39,28 +52,23 @@ SEED_USER_NAME=Name
 SEED_USER_PASSWORD=some-password
 ```
 
-### 4. Run migrations
-
-```bash
-npx prisma migrate dev
-```
-
-### 5. Seed the database
-
-```bash
-npx prisma db seed
-```
-
-### 6. Start the dev server
-
-```bash
-npm run dev
-```
+When running via `docker compose up`, `DATABASE_URL` is overridden to point at the `postgres` service inside the Docker network — the value above is for local dev against the published port.
 
 ## Scripts
 
 | Command | Description |
 |---------|-------------|
 | `npm run dev` | Start dev server with hot reload |
-| `npm run build` | Compile TypeScript |
+| `npm run build` | Compile TypeScript to `dist/` |
 | `npm start` | Run compiled JS |
+
+## Docker reference
+
+| Command | Description |
+|---------|-------------|
+| `docker compose up -d` | Start app + db in background |
+| `docker compose up -d --build` | Rebuild image and start |
+| `docker compose logs -f app` | Tail server logs |
+| `docker compose stop` | Stop without removing containers |
+| `docker compose down` | Stop and remove containers (volume kept) |
+| `docker compose down -v` | Stop and remove containers **and database volume** |
