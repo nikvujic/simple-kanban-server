@@ -1,5 +1,6 @@
 node_modules
-/generated/prisma
+/src/generated
+dist
 
 .env
 compose.yml
