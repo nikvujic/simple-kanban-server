@@ -52,7 +52,7 @@ SEED_USER_NAME=Name
 SEED_USER_PASSWORD=some-password
 ```
 
-When running via `docker compose up`, `DATABASE_URL` is overridden to point at the `postgres` service inside the Docker network — the value above is for local dev against the published port.
+When running via `docker compose up`, `DATABASE_URL` is overridden to point at the `postgres` service inside the Docker network - the value above is for local dev against the published port.
 
 ## Scripts
 
